@@ -1,7 +1,7 @@
 """
 SQLAlchemy database models for Behflow
 """
-from sqlalchemy import Column, String, DateTime, Text, Enum, ARRAY, ForeignKey, Boolean, Integer
+from sqlalchemy import Column, String, DateTime, Text, Enum, ARRAY, ForeignKey, Boolean, Integer, JSON
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -24,6 +24,22 @@ class StatusEnum(str, enum.Enum):
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+
+
+class TriggerTypeEnum(str, enum.Enum):
+    """Automated process trigger types"""
+    MANUAL = "manual"
+    TIME_BASED = "time_based"
+    EVENT_BASED = "event_based"
+
+
+class ProcessStatusEnum(str, enum.Enum):
+    """Automated process execution status"""
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    DISABLED = "disabled"
 
 
 class UserModel(Base):
@@ -125,3 +141,56 @@ class ChatMessageModel(Base):
 
     def __repr__(self):
         return f"<ChatMessage(message_id={self.message_id}, role={self.role})>"
+
+
+class AutomatedProcessModel(Base):
+    """Automated process database model"""
+    __tablename__ = "automated_processes"
+
+    process_id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    # Process details
+    name = Column(String(255), nullable=False, unique=True, index=True)
+    description = Column(Text, nullable=True)
+    trigger_type = Column(Enum(TriggerTypeEnum), nullable=False)
+    
+    # Configuration stored as JSON
+    schedule_config = Column(JSON, nullable=True)  # For time-based triggers
+    process_config = Column(JSON, nullable=True)   # Process-specific config
+    
+    # Status
+    is_enabled = Column(Boolean, default=True, nullable=False)
+    
+    # Metadata
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    last_executed_at = Column(DateTime(timezone=True), nullable=True)
+    
+    # Relationships
+    executions = relationship("AutomatedProcessExecutionModel", back_populates="process", cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<AutomatedProcess(process_id={self.process_id}, name={self.name})>"
+
+
+class AutomatedProcessExecutionModel(Base):
+    """Automated process execution tracking model"""
+    __tablename__ = "automated_process_executions"
+
+    execution_id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    process_id = Column(PG_UUID(as_uuid=True), ForeignKey("automated_processes.process_id", ondelete="CASCADE"), nullable=False, index=True)
+    
+    # Execution details
+    status = Column(Enum(ProcessStatusEnum), default=ProcessStatusEnum.PENDING, nullable=False)
+    started_at = Column(DateTime(timezone=True), nullable=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    
+    # Results stored as JSON
+    result = Column(JSON, nullable=True)
+    error_message = Column(Text, nullable=True)
+    
+    # Relationships
+    process = relationship("AutomatedProcessModel", back_populates="executions")
+
+    def __repr__(self):
+        return f"<AutomatedProcessExecution(execution_id={self.execution_id}, status={self.status})>"

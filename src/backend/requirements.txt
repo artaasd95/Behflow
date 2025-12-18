@@ -12,6 +12,9 @@ jdatetime==3.14.0
 langgraph==0.2.45
 langchain-core==0.3.15
 
+# Scheduler for automated processes
+apscheduler==3.10.4
+
 # Optional: LangChain integrations (add as needed)
 # langchain-openai==0.2.8
 # langchain-anthropic==0.2.3
