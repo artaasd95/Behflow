@@ -86,7 +86,7 @@ Behflow/
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/behflow.git
+git clone https://github.com/artaasd95/behflow.git
 cd behflow
 
 # Launch all services with Docker Compose
