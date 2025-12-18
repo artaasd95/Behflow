@@ -3,13 +3,16 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy requirements files
-COPY requirements.txt requirements-db.txt ./
+COPY requirements.txt requirements-db.txt ../behflow_agent/requirements.txt ./
 
-# Install dependencies
-RUN pip install -r requirements.txt -r requirements-db.txt
+# Install dependencies (including agent requirements)
+RUN pip install -r requirements.txt -r requirements-db.txt -r ../behflow_agent/requirements.txt
 
 # Copy application code
 COPY . .
+
+# Copy agent package into image so imports succeed
+COPY ../behflow_agent /app/behflow_agent
 
 # Copy shared module
 COPY ../shared /app/shared
