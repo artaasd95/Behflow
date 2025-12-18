@@ -1,39 +1,24 @@
 """
-Agent nodes - individual processing units in the graph
+Agent nodes - individual processing units in the graph.
+
+This module exports the main node implementations for the LangGraph agent:
+- LLMNode: Handles language model invocations with tool binding
+- ToolCallNode: Executes tool calls from the LLM
+- should_continue: Routing function for conditional edges
+- Factory functions for creating nodes
 """
+from behflow_agent.nodes.graph_nodes import (
+    LLMNode,
+    ToolCallNode,
+    should_continue,
+    create_llm_node,
+    create_tool_node,
+)
 
-class BaseNode:
-    """Base class for all agent nodes"""
-    
-    def __init__(self):
-        pass
-    
-    def execute(self, state: dict) -> dict:
-        """
-        Execute the node logic
-        
-        Args:
-            state: Current graph state
-            
-        Returns:
-            Updated state
-        """
-        raise NotImplementedError("Subclasses must implement execute()")
-
-
-class ProcessingNode(BaseNode):
-    """Example processing node - placeholder implementation"""
-    
-    def execute(self, state: dict) -> dict:
-        """Process incoming message"""
-        # TODO: Implement actual processing logic
-        return state
-
-
-class ResponseNode(BaseNode):
-    """Example response node - placeholder implementation"""
-    
-    def execute(self, state: dict) -> dict:
-        """Generate response"""
-        # TODO: Implement actual response generation
-        return state
+__all__ = [
+    "LLMNode",
+    "ToolCallNode",
+    "should_continue",
+    "create_llm_node",
+    "create_tool_node",
+]

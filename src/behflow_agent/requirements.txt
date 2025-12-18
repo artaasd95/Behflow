@@ -3,10 +3,15 @@ pydantic==2.5.3
 pytz==2024.7
 jdatetime==3.14.0
 
-# LangGraph and LangChain core
+# LangGraph and LangChain core - latest versions with async support
 langgraph==0.2.45
 langchain-core==0.3.15
+langchain==0.3.7
 
-# Optional: LLM providers (uncomment as needed)
-# langchain-openai==0.2.8
+# LLM providers - OpenAI-compatible (for OpenRouter support)
+langchain-openai==0.2.8
+
+# Optional: Additional LLM providers
 # langchain-anthropic==0.2.3
+# langchain-google-genai==2.0.0
+# langchain-groq==0.2.0
