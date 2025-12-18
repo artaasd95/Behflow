@@ -1,0 +1,4 @@
+# Behflow Agent minimal dependencies
+pydantic==2.5.3
+pytz==2024.7
+jdatetime==3.14.0

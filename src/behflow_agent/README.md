@@ -36,3 +36,10 @@ response = await agent.ainvoke("Hello", session_id="123")
 - Implement actual LangGraph graph construction
 - Add real node logic and state management
 - Integrate LLM providers (OpenAI, Anthropic, etc.)
+- Add Task model tests and edge case validation (timezone/jalali conversion)
+
+## Models
+
+- `AgentState` — agent runtime state (in `models.models`)
+- `Task` — task domain model (in `models.task`) — includes Gregorian and Jalali date fields, timezone aware defaults, priority and status enums
+
