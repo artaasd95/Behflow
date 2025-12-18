@@ -4,7 +4,7 @@ SQLAlchemy database models for Behflow
 from sqlalchemy import Column, String, DateTime, Text, Enum, ARRAY, ForeignKey, Boolean, Integer
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import enum
 
@@ -37,8 +37,8 @@ class UserModel(Base):
     lastname = Column(String(100), nullable=False)
     
     # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     
     # Relationships
@@ -62,7 +62,7 @@ class TaskModel(Base):
     
     # Dates - Gregorian
     due_date_gregorian = Column(DateTime(timezone=True), nullable=True)
-    date_added_gregorian = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    date_added_gregorian = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     
     # Dates - Jalali
     due_date_jalali = Column(String(50), nullable=True)
@@ -75,7 +75,7 @@ class TaskModel(Base):
     
     # Metadata
     completed_at = Column(DateTime(timezone=True), nullable=True)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     
     # Relationships
     user = relationship("UserModel", back_populates="tasks")
@@ -93,8 +93,8 @@ class ChatSessionModel(Base):
     
     # Session details
     title = Column(String(255), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     
     # Relationships
@@ -117,7 +117,7 @@ class ChatMessageModel(Base):
     content = Column(Text, nullable=False)
     
     # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     tokens_used = Column(Integer, nullable=True)
     
     # Relationships

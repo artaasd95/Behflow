@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from typing import List, Optional
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.database.models import TaskModel, PriorityEnum, StatusEnum
 from behflow_agent.models.task import Task
@@ -150,7 +150,7 @@ class TaskService:
                 task.status = status
                 # Mark as completed if status is COMPLETED
                 if status == StatusEnum.COMPLETED and not task.completed_at:
-                    task.completed_at = datetime.utcnow()
+                    task.completed_at = datetime.now(timezone.utc)
             if tags is not None:
                 task.tags = tags
             
@@ -255,7 +255,7 @@ class TaskService:
         Returns:
             List of overdue task models
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         return db.query(TaskModel).filter(
             TaskModel.user_id == user_id,
             TaskModel.due_date_gregorian < now,

@@ -4,7 +4,7 @@ Chat service - handles chat session and message operations
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from uuid import UUID, uuid4
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.database.models import ChatSessionModel, ChatMessageModel
 from shared.logger import get_logger
@@ -35,7 +35,7 @@ class ChatService:
         try:
             db_session = ChatSessionModel(
                 user_id=user_id,
-                title=title or f"Chat {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}"
+                title=title or f"Chat {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')}"
             )
             
             db.add(db_session)
@@ -226,7 +226,7 @@ class ChatService:
                 ChatSessionModel.session_id == session_id
             ).first()
             if session:
-                session.updated_at = datetime.utcnow()
+                session.updated_at = datetime.now(timezone.utc)
             
             db.commit()
             db.refresh(db_message)
