@@ -6,7 +6,7 @@ WORKDIR /app
 COPY requirements.txt requirements-db.txt ./
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt -r requirements-db.txt
+RUN pip install -r requirements.txt -r requirements-db.txt
 
 # Copy application code
 COPY . .

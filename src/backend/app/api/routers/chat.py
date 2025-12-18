@@ -31,8 +31,8 @@ async def chat(
     agent = AgentBuilder.build()
     logger.debug("Agent built: %s", type(agent))
     
-    # TODO: Implement actual agent invocation logic
-    # For now, return a placeholder response with user info
+    # TODO: Implement actual agent invocation logic (see `docs/TASKS.md` for task details).
+    # Current implementation returns a placeholder response with user info for testing
     response_text = f"Hello {current_user.name}, processing your message: {request.message}"
     logger.info("Chat response prepared for user=%s session=%s", current_user.username, request.session_id)
     

@@ -37,6 +37,8 @@ response = await agent.ainvoke("Hello", session_id="123")
 - Add real node logic and state management
 - Integrate LLM providers (OpenAI, Anthropic, etc.)
 - Add Task model tests and edge case validation (timezone/jalali conversion)
+- Document chat endpoint placeholder in backend (see `src/backend/app/api/routers/chat.py`)
+- Note: removed `--no-cache-dir` from backend Dockerfile (2025-12-18)
 
 ## Models
 

@@ -2,6 +2,8 @@
 
 Lightweight FastAPI backend that orchestrates requests to the behflow-agent service.
 
+**Repository:** https://github.com/artaasd95/Behflow
+
 ## Structure
 
 ```
@@ -25,7 +27,11 @@ uvicorn app.main:app --reload
 ## Endpoints
 
 - `GET /health` - Health check
-- `POST /api/v1/chat` - Chat with the agent
+- `POST /api/v1/chat` - Chat with the agent (note: current implementation returns a placeholder response; see `docs/TASKS.md` for TODOs to implement real agent invocation)
+
+## Notes
+
+- The backend Dockerfile previously used `--no-cache-dir` with pip; this was removed on 2025-12-18 per maintainer request.
 
 ## Environment
 
