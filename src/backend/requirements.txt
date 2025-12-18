@@ -1,0 +1,13 @@
+# Behflow Backend - Minimal Dependencies
+# FastAPI and core dependencies
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+
+# LangGraph for agent orchestration
+langgraph==0.0.20
+langchain-core==0.1.14
+
+# Optional: LangChain integrations (add as needed)
+# langchain-openai==0.0.5
+# langchain-anthropic==0.0.1
