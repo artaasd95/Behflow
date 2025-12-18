@@ -2,6 +2,7 @@
 FastAPI main application entry point
 """
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.routers import chat, auth
 from app.scheduler import start_scheduler, shutdown_scheduler
 from app.database.init_automated_processes import initialize_automated_processes
@@ -39,6 +40,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             logger.error(f"Error shutting down scheduler: {e}")
 
 app = FastAPI(title="Behflow API", version="0.1.0", lifespan=lifespan)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth")
