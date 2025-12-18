@@ -4,10 +4,14 @@ fastapi==0.109.0
 uvicorn[standard]==0.27.0
 pydantic==2.5.3
 
+# Timezone and date handling
+pytz==2024.7
+jdatetime==3.14.0
+
 # LangGraph for agent orchestration
-langgraph==0.0.20
-langchain-core==0.1.14
+langgraph==0.2.45
+langchain-core==0.3.15
 
 # Optional: LangChain integrations (add as needed)
-# langchain-openai==0.0.5
-# langchain-anthropic==0.0.1
+# langchain-openai==0.2.8
+# langchain-anthropic==0.2.3
