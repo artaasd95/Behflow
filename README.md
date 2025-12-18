@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" alt="Behflow logo" width="400" />
+</p>
+
 # 🌟 Behflow
 
 > *An AI-powered, self-hosted task management system that brings intelligence to your workflow*
