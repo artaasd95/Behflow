@@ -2,6 +2,9 @@
 Agent Builder - Factory pattern for creating agent instances
 """
 from behflow_agent.agent import BehflowAgent
+from shared.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class AgentBuilder:
@@ -36,6 +39,8 @@ class AgentBuilder:
         Returns:
             Configured BehflowAgent instance
         """
+        logger.info("Building agent with custom nodes: %s", nodes)
         # TODO: Implement custom node injection
         agent = BehflowAgent()
+        logger.debug("Agent with custom nodes created: %s", agent)
         return agent

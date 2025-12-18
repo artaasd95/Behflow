@@ -5,6 +5,9 @@ from fastapi import APIRouter, HTTPException, Depends, Header
 from app.api.models.user import UserRegister, UserLogin, User, LoginResponse
 from uuid import uuid4, UUID
 from typing import Optional
+from shared.logger import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(tags=["auth"])
 
@@ -74,17 +77,21 @@ async def get_current_user_from_header(x_user_id: Optional[str] = Header(None)) 
     Simple authentication - checks user_id in header
     For simplicity, we're using a header-based auth
     """
+    logger.debug("Authenticating user id header=%s", x_user_id)
     if not x_user_id:
+        logger.warning("Missing authentication header (x-user-id)")
         raise HTTPException(status_code=401, detail="Missing authentication header (x-user-id)")
     
     try:
         user_uuid = UUID(x_user_id)
     except ValueError:
+        logger.warning("Invalid user_id format: %s", x_user_id)
         raise HTTPException(status_code=401, detail="Invalid user_id format")
     
     # Find user by user_id
     for username, user_data in users_db.items():
         if user_data["user_id"] == user_uuid:
+            logger.info("Authenticated user %s", username)
             return User(
                 user_id=user_data["user_id"],
                 username=user_data["username"],
@@ -92,6 +99,7 @@ async def get_current_user_from_header(x_user_id: Optional[str] = Header(None)) 
                 lastname=user_data["lastname"]
             )
     
+    logger.warning("User not found for id %s", user_uuid)
     raise HTTPException(status_code=401, detail="User not found")
 
 

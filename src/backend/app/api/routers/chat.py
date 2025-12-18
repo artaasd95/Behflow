@@ -6,6 +6,9 @@ from behflow_agent.builder import AgentBuilder
 from app.api.models.models import ChatRequest, ChatResponse
 from app.api.models.user import User
 from app.api.routers.auth import get_current_user_from_header
+from shared.logger import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(tags=["chat"])
 
@@ -22,12 +25,16 @@ async def chat(
     Calls the agent service to process user messages
     Requires authentication
     """
+    logger.info("Chat request from user=%s session=%s", current_user.username, request.session_id)
+
     # Build agent instance using factory pattern
     agent = AgentBuilder.build()
+    logger.debug("Agent built: %s", type(agent))
     
     # TODO: Implement actual agent invocation logic
     # For now, return a placeholder response with user info
     response_text = f"Hello {current_user.name}, processing your message: {request.message}"
+    logger.info("Chat response prepared for user=%s session=%s", current_user.username, request.session_id)
     
     return ChatResponse(
         response=response_text,

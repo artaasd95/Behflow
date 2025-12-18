@@ -7,6 +7,9 @@ from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from behflow_agent.models import AgentState
 from behflow_agent.tools import TASK_TOOLS
+from shared.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def should_continue(state: AgentState) -> Literal["tools", "end"]:
@@ -156,7 +159,9 @@ class BehflowAgent:
         Returns:
             Agent response string
         """
+        logger.info("Invoking agent (async) message=%s user_id=%s", message, user_id)
         if not self.compiled_graph:
+            logger.error("Attempted to ainvoke agent but graph is not compiled")
             return "Error: Graph not compiled"
         
         # Create initial state
@@ -166,7 +171,13 @@ class BehflowAgent:
         }
         
         # Run the graph asynchronously
-        result = await self.compiled_graph.ainvoke(initial_state)
+        try:
+            result = await self.compiled_graph.ainvoke(initial_state)
+        except Exception as e:
+            logger.exception("Async agent invocation failed: %s", e)
+            from behflow_agent.tools import clear_current_user
+            clear_current_user()
+            return f"Error invoking agent: {str(e)}"
 
         # Clear user context after invocation
         from behflow_agent.tools import clear_current_user
@@ -175,6 +186,8 @@ class BehflowAgent:
         # Extract the last message
         if result and "messages" in result:
             last_message = result["messages"][-1]
+            logger.info("Async agent invocation completed, returning response")
             return last_message.content
         
+        logger.warning("Async agent invocation returned no messages")
         return "No response generated"

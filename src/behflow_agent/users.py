@@ -5,6 +5,9 @@ This is an in-memory placeholder for a real user registry or DB table.
 """
 from uuid import UUID, uuid4
 from typing import Dict
+from shared.logger import get_logger
+
+logger = get_logger(__name__)
 
 _USER_MAP: Dict[str, UUID] = {}
 
@@ -19,9 +22,11 @@ def get_or_create_user_uuid(external_id: str) -> UUID:
         UUID assigned to that external id
     """
     if external_id in _USER_MAP:
+        logger.debug("Found existing UUID for external_id=%s", external_id)
         return _USER_MAP[external_id]
     uid = uuid4()
     _USER_MAP[external_id] = uid
+    logger.info("Created new UUID %s for external_id=%s", uid, external_id)
     return uid
 
 
