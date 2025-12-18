@@ -125,6 +125,14 @@ Explore comprehensive documentation in the [docs folder](docs/):
 | Document | Description |
 |----------|-------------|
 | 🏗 [Architecture](docs/architecture.md) | System design, components, and request flow |
+| 📡 [API Documentation](docs/API.md) | REST API endpoints, requests, and responses |
+| 🤖 [Agent System](docs/AGENT.md) | AI agent architecture and tools |
+| 🗄 [Database Schema](docs/DATABASE.md) | Database models, services, and migrations |
+| 🌐 [Frontend Guide](docs/FRONTEND.md) | UI components and client-side logic |
+| 🔗 [Integration Guide](docs/INTEGRATION.md) | Third-party integrations and webhooks |
+| 🚀 [Deployment Guide](docs/DEPLOYMENT.md) | Production deployment strategies |
+| ⚙️ [Configuration](docs/CONFIGURATION.md) | Environment variables and settings |
+| 🧪 [Testing Guide](docs/TESTING.md) | Testing strategies and best practices |
 | ⚙️ [Automated Processes](docs/automated_processes.md) | Scheduling, triggers, and automation system |
 | 📋 [Tasks & Changes](docs/TASKS.md) | Development roadmap and change log |
 
@@ -146,6 +154,57 @@ Please read our contribution guidelines and follow the existing code style.
 - **AI Engine**: LangGraph, OpenAI/Anthropic integration
 - **Infrastructure**: Docker, Docker Compose, Nginx
 - **Database**: PostgreSQL with timezone awareness
+- **Testing**: pytest, Jest, Testing Library
+
+## 🧪 Testing
+
+Behflow includes comprehensive test coverage for backend, frontend, and agent components.
+
+### Running Tests
+
+```bash
+# Backend tests
+cd src/backend
+pytest
+
+# With coverage
+pytest --cov=app --cov-report=html
+
+# Specific test file
+pytest tests/backend/test_auth_service.py
+
+# Agent tests
+pytest tests/agent/
+
+# Frontend tests (requires Jest setup)
+cd src/frontend
+npm test
+```
+
+### Test Structure
+
+```
+tests/
+├── conftest.py              # Shared fixtures
+├── backend/
+│   ├── test_auth_service.py
+│   ├── test_task_service.py
+│   └── test_api_endpoints.py
+├── agent/
+│   ├── test_tools.py
+│   └── test_builder.py
+└── frontend/
+    └── README.md             # Frontend test guide
+```
+
+### Test Coverage
+
+Our testing strategy follows the test pyramid:
+- **Unit Tests (70%)**: Fast, isolated tests for individual functions
+- **Integration Tests (20%)**: Test component interactions
+- **End-to-End Tests (10%)**: Complete workflow validation
+
+For detailed testing guidelines, see [Testing Documentation](docs/TESTING.md).
 
 ## 📄 License
 
