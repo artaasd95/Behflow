@@ -5,10 +5,11 @@ Includes LLM invocation node and tool calling nodes with async support.
 from typing import Dict, Any
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langgraph.prebuilt import ToolNode
 from behflow_agent.models.models import AgentState
 from behflow_agent.tools import TASK_TOOLS, set_current_user, clear_current_user
-from behflow_agent.utils import AGENT_PROMPT
+from behflow_agent.utils import get_system_prompt
 from shared.logger import get_logger
 
 logger = get_logger(__name__)
@@ -66,8 +67,14 @@ class LLMNode:
             if state.user_id:
                 set_current_user(state.user_id)
             
+            # Create prompt template with current time dynamically
+            agent_prompt = ChatPromptTemplate.from_messages([
+                ("system", get_system_prompt()),
+                MessagesPlaceholder(variable_name="messages"),
+            ])
+            
             # Format messages with prompt template
-            formatted_messages = AGENT_PROMPT.format_messages(
+            formatted_messages = agent_prompt.format_messages(
                 messages=state.messages
             )
             

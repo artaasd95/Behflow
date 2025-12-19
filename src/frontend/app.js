@@ -18,6 +18,97 @@ if (userDisplay && username) {
     userDisplay.textContent = `👤 ${username}`;
 }
 
+// ===== DATE DISPLAY FUNCTIONALITY =====
+
+/**
+ * Convert Gregorian date to Jalali (Persian) date
+ * Simple conversion algorithm
+ */
+function gregorianToJalali(gYear, gMonth, gDay) {
+    const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+    
+    let jYear = (gYear <= 1600) ? 0 : 979;
+    gYear -= (gYear <= 1600) ? 621 : 1600;
+    
+    let gy2 = (gMonth > 2) ? (gYear + 1) : gYear;
+    let days = (365 * gYear) + (Math.floor((gy2 + 3) / 4)) - (Math.floor((gy2 + 99) / 100)) + 
+               (Math.floor((gy2 + 399) / 400)) - 80 + gDay + g_d_m[gMonth - 1];
+    
+    jYear += 33 * Math.floor(days / 12053);
+    days %= 12053;
+    
+    jYear += 4 * Math.floor(days / 1461);
+    days %= 1461;
+    
+    if (days > 365) {
+        jYear += Math.floor((days - 1) / 365);
+        days = (days - 1) % 365;
+    }
+    
+    const jMonth = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+    const jDay = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+    
+    return [jYear, jMonth, jDay];
+}
+
+/**
+ * Get Jalali month name
+ */
+function getJalaliMonthName(month) {
+    const months = [
+        'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+        'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+    ];
+    return months[month - 1];
+}
+
+/**
+ * Update date display in header
+ */
+function updateDateDisplay() {
+    const now = new Date();
+    
+    // Gregorian date
+    const gregorianOptions = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    const gregorianStr = now.toLocaleDateString('en-US', gregorianOptions);
+    
+    // Jalali date
+    const [jYear, jMonth, jDay] = gregorianToJalali(
+        now.getFullYear(), 
+        now.getMonth() + 1, 
+        now.getDate()
+    );
+    const jalaliStr = `${jDay} ${getJalaliMonthName(jMonth)} ${jYear}`;
+    
+    // Update DOM
+    const dateGregorian = document.getElementById('dateGregorian');
+    const dateJalali = document.getElementById('dateJalali');
+    
+    if (dateGregorian) {
+        dateGregorian.textContent = `📅 ${gregorianStr}`;
+    }
+    
+    if (dateJalali) {
+        dateJalali.textContent = `📅 ${jalaliStr}`;
+    }
+}
+
+// Initialize date display
+updateDateDisplay();
+
+// Update date display at midnight
+setInterval(() => {
+    const now = new Date();
+    if (now.getHours() === 0 && now.getMinutes() === 0) {
+        updateDateDisplay();
+    }
+}, 60000); // Check every minute
+
 // Set initial timestamp
 const initialTime = document.getElementById('initialTime');
 if (initialTime) {
@@ -67,11 +158,78 @@ async function apiRequest(endpoint, options = {}) {
 
 // Task status mapping
 const TASK_STATUS = {
-    'not-started': 'Not Started',
-    'in-progress': 'In Progress',
+    'pending': 'Pending',
+    'in_progress': 'In Progress',
     'completed': 'Completed',
-    'blocked': 'Blocked'
+    'cancelled': 'Cancelled'
 };
+
+// Task status enum values for API
+const STATUS_ENUM = {
+    'pending': 'pending',
+    'in_progress': 'in_progress',
+    'completed': 'completed',
+    'cancelled': 'cancelled'
+};
+
+/**
+ * Update task status via API
+ */
+async function updateTaskStatus(taskId, status) {
+    try {
+        const response = await apiRequest('/api/v1/tasks/status', {
+            method: 'PUT',
+            body: JSON.stringify({
+                task_id: taskId,
+                status: status
+            })
+        });
+        
+        if (response && response.success) {
+            console.log(`Task ${taskId} status updated to ${status}`);
+            // Reload tasks to reflect changes
+            await loadTasks();
+            return true;
+        } else {
+            console.error('Failed to update task status:', response);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error updating task status:', error);
+        return false;
+    }
+}
+
+/**
+ * Mark task as completed
+ */
+async function markTaskComplete(taskId) {
+    return await updateTaskStatus(taskId, STATUS_ENUM.completed);
+}
+
+/**
+ * Handle status change button click
+ */
+function handleStatusChange(taskId, selectElement) {
+    const newStatus = selectElement.value;
+    
+    // Create and show update button if it doesn't exist
+    let updateBtn = selectElement.nextElementSibling;
+    if (!updateBtn || !updateBtn.classList.contains('task-btn-update')) {
+        updateBtn = document.createElement('button');
+        updateBtn.className = 'task-btn task-btn-update';
+        updateBtn.textContent = 'Update';
+        updateBtn.onclick = async () => {
+            const success = await updateTaskStatus(taskId, newStatus);
+            if (success) {
+                // Remove the dropdown and update button after successful update
+                selectElement.remove();
+                updateBtn.remove();
+            }
+        };
+        selectElement.parentNode.insertBefore(updateBtn, selectElement.nextSibling);
+    }
+}
 
 // Load and display tasks
 async function loadTasks() {
@@ -79,7 +237,7 @@ async function loadTasks() {
     
     try {
         // Fetch tasks from API
-        const tasks = await apiRequest('/api/chat/tasks');
+        const tasks = await apiRequest('/api/v1/tasks');
         
         if (!tasks || tasks.length === 0) {
             tasksContainer.innerHTML = `
@@ -94,7 +252,7 @@ async function loadTasks() {
         // Group tasks by status
         const tasksByStatus = {};
         tasks.forEach(task => {
-            const status = task.status || 'not-started';
+            const status = task.status || 'pending';
             if (!tasksByStatus[status]) {
                 tasksByStatus[status] = [];
             }
@@ -109,8 +267,19 @@ async function loadTasks() {
                     <h2>${TASK_STATUS[status] || status}</h2>
                     <ul class="task-list">
                         ${statusTasks.map(task => `
-                            <li class="task-item ${status}" data-task-id="${task.id}">
-                                <div class="markdown-content">${marked.parse(task.description || task.title)}</div>
+                            <li class="task-item ${status}" data-task-id="${task.task_id}">
+                                <div class="task-item-content">
+                                    <div class="markdown-content">${marked.parse(task.name || 'Untitled Task')}</div>
+                                    ${task.description ? `<div class="markdown-content" style="font-size: 0.9em; opacity: 0.8; margin-top: 5px;">${marked.parse(task.description)}</div>` : ''}
+                                    <div class="task-actions">
+                                        <button class="task-btn task-btn-done" onclick="markTaskComplete('${task.task_id}')">
+                                            ✓ Done
+                                        </button>
+                                        <button class="task-btn task-btn-change" onclick="showStatusDropdown('${task.task_id}', this)">
+                                            ⚡ Change Status
+                                        </button>
+                                    </div>
+                                </div>
                             </li>
                         `).join('')}
                     </ul>
@@ -119,14 +288,6 @@ async function loadTasks() {
         }
         
         tasksContainer.innerHTML = html;
-        
-        // Add click handlers for tasks
-        document.querySelectorAll('.task-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const taskId = item.getAttribute('data-task-id');
-                handleTaskClick(taskId);
-            });
-        });
         
     } catch (error) {
         console.error('Error loading tasks:', error);
@@ -139,10 +300,38 @@ async function loadTasks() {
     }
 }
 
-// Handle task click
-function handleTaskClick(taskId) {
-    console.log('Task clicked:', taskId);
-    // You can implement task detail view or actions here
+/**
+ * Show status dropdown for task
+ */
+function showStatusDropdown(taskId, buttonElement) {
+    // Check if dropdown already exists
+    const existingDropdown = buttonElement.nextElementSibling;
+    if (existingDropdown && existingDropdown.tagName === 'SELECT') {
+        existingDropdown.remove();
+        const existingUpdateBtn = existingDropdown.nextElementSibling;
+        if (existingUpdateBtn && existingUpdateBtn.classList.contains('task-btn-update')) {
+            existingUpdateBtn.remove();
+        }
+        return;
+    }
+    
+    // Create status dropdown
+    const select = document.createElement('select');
+    select.className = 'task-status-select';
+    
+    // Add options
+    for (const [value, label] of Object.entries(TASK_STATUS)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        select.appendChild(option);
+    }
+    
+    // Add change handler
+    select.onchange = () => handleStatusChange(taskId, select);
+    
+    // Insert after button
+    buttonElement.parentNode.insertBefore(select, buttonElement.nextSibling);
 }
 
 // ===== CHAT FUNCTIONALITY =====
@@ -154,7 +343,7 @@ const sendBtn = document.getElementById('sendBtn');
 // Load chat history
 async function loadChatHistory() {
     try {
-        const messages = await apiRequest('/api/chat/history');
+        const messages = await apiRequest('/api/v1/chat/history');
         
         if (messages && messages.length > 0) {
             // Clear initial message
@@ -217,7 +406,7 @@ async function sendMessage() {
     
     try {
         // Send message to API
-        const response = await apiRequest('/api/chat/message', {
+        const response = await apiRequest('/api/v1/chat', {
             method: 'POST',
             body: JSON.stringify({ message })
         });

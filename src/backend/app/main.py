@@ -3,7 +3,7 @@ FastAPI main application entry point
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routers import chat, auth
+from app.api.routers import chat, auth, tasks
 from app.scheduler import start_scheduler, shutdown_scheduler
 from app.database.init_automated_processes import initialize_automated_processes
 from shared.logger import get_logger
@@ -53,6 +53,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth")
 app.include_router(chat.router, prefix="/api/v1")
+app.include_router(tasks.router, prefix="/api/v1")
 
 
 @app.get("/health")

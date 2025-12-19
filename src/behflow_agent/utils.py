@@ -3,10 +3,45 @@ Utility functions and templates for the Behflow agent.
 Includes prompt templates and helper functions for LLM invocations.
 """
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from datetime import datetime
+import os
+import pytz
+import jdatetime
+
+
+# Timezone configuration
+_TIMEZONE = os.getenv("BEHFLOW_TIMEZONE", "Asia/Tehran")
+_TZ = pytz.timezone(_TIMEZONE)
+
+
+def get_current_time_context() -> str:
+    """
+    Get current time in both Gregorian and Jalali formats.
+    
+    Returns:
+        Formatted string with current date and time
+    """
+    now = datetime.now(_TZ)
+    
+    # Gregorian format
+    gregorian_str = now.strftime("%Y-%m-%d %H:%M:%S %Z")
+    
+    # Jalali format
+    jal = jdatetime.datetime.fromgregorian(datetime=now)
+    jalali_str = jal.strftime("%Y-%m-%d %H:%M:%S")
+    
+    return f"Current time: {gregorian_str} (Gregorian) | {jalali_str} (Jalali/Shamsi)"
 
 
 # System prompt for the Behflow task management agent
-SYSTEM_PROMPT = """You are Behflow, an intelligent task management assistant.
+def get_system_prompt() -> str:
+    """Get system prompt with current time context"""
+    time_context = get_current_time_context()
+    
+    return f"""You are Behflow, an intelligent task management assistant.
+
+{time_context}
+
 You help users manage their tasks efficiently by:
 - Creating new tasks with proper priorities and descriptions
 - Organizing tasks with tags and categories
@@ -14,14 +49,19 @@ You help users manage their tasks efficiently by:
 - Updating task status and priorities
 - Removing completed or unnecessary tasks
 
+When creating tasks with dates, use the current time as reference.
 Always be helpful, concise, and proactive in suggesting task management improvements.
 When users ask to create tasks, extract all relevant details like priority, tags, and descriptions.
 """
 
 
+# Legacy constant for backward compatibility
+SYSTEM_PROMPT = get_system_prompt()
+
+
 # Chat prompt template with system message and message history
 AGENT_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", SYSTEM_PROMPT),
+    ("system", get_system_prompt()),
     MessagesPlaceholder(variable_name="messages"),
 ])
 
