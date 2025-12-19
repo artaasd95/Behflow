@@ -1,10 +1,19 @@
--- Migration: Add Automated Processes Tables
--- This script adds tables for automated process management
--- Run this after your existing database schema is set up
+-- Migration: Add Automated Processes Tables (LEGACY)
+-- This script is now included in 000_init_database.sql
+-- Keeping for reference only - will not execute if types/tables already exist
 
--- Create enum types for automated processes
-CREATE TYPE trigger_type_enum AS ENUM ('manual', 'time_based', 'event_based');
-CREATE TYPE process_status_enum AS ENUM ('pending', 'running', 'completed', 'failed', 'disabled');
+-- Create enum types for automated processes (skip if already exist)
+DO $$ BEGIN
+    CREATE TYPE trigger_type_enum AS ENUM ('manual', 'time_based', 'event_based');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE process_status_enum AS ENUM ('pending', 'running', 'completed', 'failed', 'disabled');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Create automated_processes table
 CREATE TABLE IF NOT EXISTS automated_processes (
@@ -43,7 +52,7 @@ CREATE INDEX IF NOT EXISTS idx_automated_process_executions_process_id ON automa
 -- Create index on started_at for sorting execution history
 CREATE INDEX IF NOT EXISTS idx_automated_process_executions_started_at ON automated_process_executions(started_at DESC);
 
--- Create trigger to automatically update updated_at timestamp
+-- Create trigger to automatically update updated_at timestamp (skip if already exists)
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -52,6 +61,8 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Drop trigger if exists and recreate (to ensure compatibility)
+DROP TRIGGER IF EXISTS update_automated_processes_updated_at ON automated_processes;
 CREATE TRIGGER update_automated_processes_updated_at
     BEFORE UPDATE ON automated_processes
     FOR EACH ROW

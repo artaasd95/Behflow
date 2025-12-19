@@ -90,12 +90,19 @@ git clone https://github.com/artaasd95/behflow.git
 cd behflow
 
 # Launch all services with Docker Compose
-docker-compose up -d
+cd infra
+docker compose up --build -d
 
 # Access the application
-# 🌐 Frontend: http://localhost:8080
-# 🔌 API: http://localhost:8000
+# 🌐 Frontend: http://localhost:3000
+# 🔌 Backend API: http://localhost:8010
+# 🗄️ Database: localhost:15432 (postgres)
+
+# Database is automatically initialized on first startup!
+# All tables, indexes, and default data are created automatically.
 ```
+
+**First Time Setup**: The database will automatically initialize with all required tables and configurations. No manual setup needed!
 
 #### 🛠 **Local Development Setup**
 
@@ -132,6 +139,7 @@ Explore comprehensive documentation in the [docs folder](docs/):
 | 📡 [API Documentation](docs/API.md) | REST API endpoints, requests, and responses |
 | 🤖 [Agent System](docs/AGENT.md) | AI agent architecture and tools |
 | 🗄 [Database Schema](docs/DATABASE.md) | Database models, services, and migrations |
+| 🛠 [Database Setup](docs/DATABASE_SETUP.md) | **Database initialization, migrations, and troubleshooting** |
 | 🌐 [Frontend Guide](docs/FRONTEND.md) | UI components and client-side logic |
 | 🔗 [Integration Guide](docs/INTEGRATION.md) | Third-party integrations and webhooks |
 | 🚀 [Deployment Guide](docs/DEPLOYMENT.md) | Production deployment strategies |
