@@ -85,8 +85,8 @@ class TaskModel(Base):
     date_added_jalali = Column(String(50), nullable=False)
     
     # Task properties
-    priority = Column(Enum(PriorityEnum), default=PriorityEnum.MEDIUM, nullable=False)
-    status = Column(Enum(StatusEnum), default=StatusEnum.PENDING, nullable=False, index=True)
+    priority = Column(Enum(PriorityEnum, values_callable=lambda obj: [e.value for e in obj]), default=PriorityEnum.MEDIUM, nullable=False)
+    status = Column(Enum(StatusEnum, values_callable=lambda obj: [e.value for e in obj]), default=StatusEnum.PENDING, nullable=False, index=True)
     tags = Column(ARRAY(String), nullable=True)
     
     # Metadata
@@ -152,7 +152,7 @@ class AutomatedProcessModel(Base):
     # Process details
     name = Column(String(255), nullable=False, unique=True, index=True)
     description = Column(Text, nullable=True)
-    trigger_type = Column(Enum(TriggerTypeEnum), nullable=False)
+    trigger_type = Column(Enum(TriggerTypeEnum, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     
     # Configuration stored as JSON
     schedule_config = Column(JSON, nullable=True)  # For time-based triggers
@@ -181,7 +181,7 @@ class AutomatedProcessExecutionModel(Base):
     process_id = Column(PG_UUID(as_uuid=True), ForeignKey("automated_processes.process_id", ondelete="CASCADE"), nullable=False, index=True)
     
     # Execution details
-    status = Column(Enum(ProcessStatusEnum), default=ProcessStatusEnum.PENDING, nullable=False)
+    status = Column(Enum(ProcessStatusEnum, values_callable=lambda obj: [e.value for e in obj]), default=ProcessStatusEnum.PENDING, nullable=False)
     started_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     

@@ -115,8 +115,10 @@ class AutomatedProcessService:
         Returns:
             List of process models
         """
+        # Use .value to get the string value of the enum for proper comparison
+        trigger_value = trigger_type.value if isinstance(trigger_type, TriggerTypeEnum) else trigger_type
         query = db.query(AutomatedProcessModel).filter(
-            AutomatedProcessModel.trigger_type == trigger_type
+            AutomatedProcessModel.trigger_type == trigger_value
         )
         if enabled_only:
             query = query.filter(AutomatedProcessModel.is_enabled == True)
