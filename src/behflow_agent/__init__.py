@@ -16,7 +16,7 @@ from behflow_agent.agent import BehflowAgent
 from behflow_agent.builder import AgentBuilder
 from behflow_agent.llm_config import LLMConfig, create_llm
 from behflow_agent.models.models import AgentState
-from behflow_agent.utils import AGENT_PROMPT, create_custom_prompt
+from behflow_agent.utils import get_agent_prompt, create_custom_prompt
 
 __version__ = "0.2.0"
 __all__ = [
@@ -25,6 +25,6 @@ __all__ = [
     "LLMConfig",
     "create_llm",
     "AgentState",
-    "AGENT_PROMPT",
+    "get_agent_prompt",
     "create_custom_prompt",
 ]

@@ -55,18 +55,17 @@ When users ask to create tasks, extract all relevant details like priority, tags
 """
 
 
-# Legacy constant for backward compatibility
-SYSTEM_PROMPT = get_system_prompt()
+# NOTE: create the prompt dynamically per-request so the current time is fresh
+
+def get_agent_prompt() -> ChatPromptTemplate:
+    """Return a prompt template with the current system prompt (dynamic)."""
+    return ChatPromptTemplate.from_messages([
+        ("system", get_system_prompt()),
+        MessagesPlaceholder(variable_name="messages"),
+    ])
 
 
-# Chat prompt template with system message and message history
-AGENT_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", get_system_prompt()),
-    MessagesPlaceholder(variable_name="messages"),
-])
-
-
-# Alternative prompt for more structured responses
+# Alternative prompt for more structured responses (keeps using a passed-in system_prompt)
 STRUCTURED_AGENT_PROMPT = ChatPromptTemplate.from_messages([
     ("system", "{system_prompt}"),
     MessagesPlaceholder(variable_name="messages"),

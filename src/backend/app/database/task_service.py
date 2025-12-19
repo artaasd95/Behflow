@@ -30,14 +30,18 @@ class TaskService:
             Created task model
         """
         try:
+            # Normalize stored datetimes to UTC to avoid timezone inconsistencies
+            date_added_gregorian = task.date_added_gregorian.astimezone(timezone.utc) if task.date_added_gregorian else datetime.now(timezone.utc)
+            due_date_gregorian = task.due_date_gregorian.astimezone(timezone.utc) if task.due_date_gregorian else None
+
             db_task = TaskModel(
                 task_id=task.task_id,
                 user_id=task.user_id,
                 name=task.name,
                 description=task.description,
-                due_date_gregorian=task.due_date_gregorian,
+                due_date_gregorian=due_date_gregorian,
                 due_date_jalali=task.due_date_jalali,
-                date_added_gregorian=task.date_added_gregorian,
+                date_added_gregorian=date_added_gregorian,
                 date_added_jalali=task.date_added_jalali,
                 priority=PriorityEnum[task.priority.upper()],
                 status=StatusEnum[task.status.upper()],

@@ -327,6 +327,17 @@ function showStatusDropdown(taskId, buttonElement) {
         select.appendChild(option);
     }
     
+    // Preselect current task status when showing the dropdown
+    const taskElem = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskElem) {
+        // The list item has a class matching the status name (e.g., 'in_progress')
+        const classes = Array.from(taskElem.classList);
+        const currentStatus = Object.keys(TASK_STATUS).find(s => classes.includes(s));
+        if (currentStatus) {
+            select.value = currentStatus;
+        }
+    }
+
     // Add change handler
     select.onchange = () => handleStatusChange(taskId, select);
     
