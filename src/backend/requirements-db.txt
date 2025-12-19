@@ -1,5 +1,0 @@
-# Database dependencies
-sqlalchemy>=2.0.0
-psycopg2-binary>=2.9.0  # PostgreSQL adapter
-bcrypt>=4.0.0  # Password hashing
-alembic>=1.12.0  # Database migrations (optional but recommended)

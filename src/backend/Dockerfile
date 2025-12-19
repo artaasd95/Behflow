@@ -3,10 +3,10 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy requirements files
-COPY requirements.txt requirements-db.txt ../behflow_agent/requirements.txt ./
+COPY requirements.txt ../behflow_agent/requirements.txt ./
 
 # Install dependencies (including agent requirements)
-RUN pip install -r requirements.txt -r requirements-db.txt -r ../behflow_agent/requirements.txt
+RUN pip install -r requirements.txt -r ../behflow_agent/requirements.txt
 
 # Copy application code
 COPY . .
