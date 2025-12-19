@@ -18,11 +18,12 @@ services:
       retries: 5
 
   backend:
+    container_name: infra-backend
     build:
-      context: ../src/backend
-      dockerfile: Dockerfile
+      context: ../src
+      dockerfile: backend/Dockerfile
     ports:
-      - "8000:8000"
+      - "8010:8000"
     environment:
       - DATABASE_URL=postgresql://behflow:admin@db:5432/behflow_dev
     depends_on:
@@ -31,6 +32,7 @@ services:
     restart: unless-stopped
 
   frontend:
+    container_name: infra-frontend
     build:
       context: ../src/frontend
       dockerfile: Dockerfile

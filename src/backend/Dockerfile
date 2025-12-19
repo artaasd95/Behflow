@@ -2,20 +2,23 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy requirements files
-COPY requirements.txt ../behflow_agent/requirements.txt ./
+# Copy requirements file (paths are relative to the build context, which is ../src)
+COPY backend/requirements.txt ./requirements.txt
 
-# Install dependencies (including agent requirements)
-RUN pip install -r requirements.txt -r ../behflow_agent/requirements.txt
+# Install dependencies
+# Note: we intentionally install only the backend requirements to avoid pin conflicts
+# with the separate `behflow_agent/requirements.txt`. If a missing requirement is discovered
+# later, I'll ask you to add it to `backend/requirements.txt`.
+RUN pip install -r requirements.txt
 
 # Copy application code
-COPY . .
+COPY backend/ /app
 
 # Copy agent package into image so imports succeed
-COPY ../behflow_agent /app/behflow_agent
+COPY behflow_agent /app/behflow_agent
 
 # Copy shared module
-COPY ../shared /app/shared
+COPY shared /app/shared
 
 # Expose port
 EXPOSE 8000
