@@ -57,13 +57,13 @@ The application uses the **Atom One Dark Pro** color scheme with the following p
 The frontend expects the following backend API endpoints:
 
 ### Authentication
-- `POST /api/auth/login` - Login with username and password
-- `POST /api/auth/register` - Register new user
+- `POST /api/v1/auth/login` - Login with username and password
+- `POST /api/v1/auth/register` - Register new user
 
 ### Chat
-- `POST /api/chat/message` - Send a chat message
-- `GET /api/chat/history` - Get chat history
-- `GET /api/chat/tasks` - Get user tasks
+- `POST /api/v1/chat` - Send a chat message
+- `GET /api/v1/chat/history` - Get chat history
+- `GET /api/v1/tasks` - Get user tasks
 
 ## Usage
 

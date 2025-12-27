@@ -69,7 +69,7 @@ registerForm.addEventListener('submit', async (e) => {
     registerBtn.innerHTML = '<span class="loading"></span> Creating account...';
     
     try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
