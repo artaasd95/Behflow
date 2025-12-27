@@ -39,18 +39,25 @@ registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const username = document.getElementById('username').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const lastname = document.getElementById('lastname').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     
     // Validate inputs
-    if (!username || !email || !password || !confirmPassword) {
+    if (!username || !name || !lastname || !email || !password || !confirmPassword) {
         showError('Please fill in all fields');
         return;
     }
     
     if (username.length < 3) {
         showError('Username must be at least 3 characters long');
+        return;
+    }
+
+    if (name.length < 1 || lastname.length < 1) {
+        showError('Please provide your first and last name');
         return;
     }
     
@@ -77,6 +84,8 @@ registerForm.addEventListener('submit', async (e) => {
             },
             body: JSON.stringify({
                 username: username,
+                name: name,
+                lastname: lastname,
                 email: email,
                 password: password
             })
