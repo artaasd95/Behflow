@@ -516,9 +516,9 @@ body {
 }
 
 .logo-image {
-  height: 32px;
+  height: 40px;
   width: auto;
-  opacity: 0.8;
+  opacity: 0.9;
   transition: opacity 0.3s ease;
 }
 

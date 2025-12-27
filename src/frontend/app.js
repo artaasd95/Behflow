@@ -83,7 +83,16 @@ function updateDateDisplay() {
         now.getMonth() + 1, 
         now.getDate()
     );
-    const jalaliStr = `${jDay} ${getJalaliMonthName(jMonth)} ${jYear}`;
+
+    // Convert English digits to Persian digits to avoid BiDi reordering when mixed with RTL month names
+    const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+    function toPersianDigits(val) {
+        return String(val).split('').map(ch => (ch >= '0' && ch <= '9') ? PERSIAN_DIGITS[ch.charCodeAt(0) - 48] : ch).join('');
+    }
+
+    const persianDay = toPersianDigits(jDay);
+    const persianYear = toPersianDigits(jYear);
+    const persianStr = `${persianDay} ${getJalaliMonthName(jMonth)} ${persianYear}`;
     
     // Update DOM
     const dateGregorian = document.getElementById('dateGregorian');
@@ -94,7 +103,8 @@ function updateDateDisplay() {
     }
     
     if (dateJalali) {
-        dateJalali.textContent = `📅 ${jalaliStr}`;
+        // Wrap jalali string in an RTL span to ensure correct visual order
+        dateJalali.innerHTML = `📅 <span dir="rtl" style="unicode-bidi: embed;">${persianStr}</span>`;
     }
 }
 
