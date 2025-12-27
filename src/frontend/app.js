@@ -3,13 +3,12 @@
 // Docker maps backend port 8000 -> host 8010, so point to host:8010 when testing outside the proxy
 const API_BASE_URL = 'http://46.249.101.150:8010'; // e.g. http://<backend-host>:8010
 
-// Get stored auth token
-const token = localStorage.getItem('access_token');
-const tokenType = localStorage.getItem('token_type') || 'Bearer';
+// Get stored auth info
+const userId = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
 
 // Check authentication
-if (!token) {
+if (!userId) {
     window.location.href = 'login.html';
 }
 
@@ -119,8 +118,7 @@ if (initialTime) {
 // Logout functionality
 const logoutBtn = document.getElementById('logoutBtn');
 logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('token_type');
+    localStorage.removeItem('user_id');
     localStorage.removeItem('username');
     window.location.href = 'login.html';
 });
@@ -129,8 +127,8 @@ logoutBtn.addEventListener('click', () => {
 async function apiRequest(endpoint, options = {}) {
     const defaultOptions = {
         headers: {
-            'Authorization': `${tokenType} ${token}`,
             'Content-Type': 'application/json',
+            'x-user-id': userId,
             ...options.headers
         }
     };
@@ -142,8 +140,9 @@ async function apiRequest(endpoint, options = {}) {
         });
         
         if (response.status === 401) {
-            // Token expired or invalid
-            localStorage.removeItem('access_token');
+            // Authentication failed
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('username');
             window.location.href = 'login.html';
             return null;
         }

@@ -34,31 +34,32 @@ loginForm.addEventListener('submit', async (e) => {
     loginBtn.innerHTML = '<span class="loading"></span> Logging in...';
     
     try {
-        // Create form data for OAuth2 password flow
-        const formData = new URLSearchParams();
-        formData.append('username', username);
-        formData.append('password', password);
-        
+        // Send JSON credentials
+        const payload = {
+            username: username,
+            password: password
+        };
+
         const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
             },
-            body: formData
+            body: JSON.stringify(payload)
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
-            // Store token and user info
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('token_type', data.token_type);
-            localStorage.setItem('username', username);
-            
+            // Backend returns a LoginResponse with `user` and `message`.
+            // Store the user id and username for subsequent requests (backend expects x-user-id header)
+            localStorage.setItem('user_id', data.user.user_id);
+            localStorage.setItem('username', data.user.username);
+
             // Redirect to main app
             window.location.href = 'index.html';
         } else {
-            showError(data.detail || 'Login failed. Please check your credentials.');
+            showError(data.detail || data.message || 'Login failed. Please check your credentials.');
         }
     } catch (error) {
         console.error('Login error:', error);
@@ -71,6 +72,6 @@ loginForm.addEventListener('submit', async (e) => {
 });
 
 // Check if already logged in
-if (localStorage.getItem('access_token')) {
+if (localStorage.getItem('user_id')) {
     window.location.href = 'index.html';
 }

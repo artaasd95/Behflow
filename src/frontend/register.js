@@ -111,6 +111,6 @@ registerForm.addEventListener('submit', async (e) => {
 });
 
 // Check if already logged in
-if (localStorage.getItem('access_token')) {
+if (localStorage.getItem('user_id')) {
     window.location.href = 'index.html';
 }
