@@ -42,10 +42,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(title="Behflow API", version="0.1.0", lifespan=lifespan)
 
 # Configure CORS
+# For development, allow any frontend origin. NOTE: this is insecure for production.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost"],
-    allow_credentials=True,
+    allow_origins=["*"],  # allow all origins for dev/testing
+    allow_credentials=False,  # disable credentials to allow wildcard origin
     allow_methods=["*"],
     allow_headers=["*"],
 )

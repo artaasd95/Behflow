@@ -1,6 +1,7 @@
 // API Base URL - adjust based on your backend setup
 // When running inside Docker, frontend proxies /api to the backend; use a relative path
-const API_BASE_URL = ''; // use relative paths like /api/xxx
+// Docker maps backend port 8000 -> host 8010, so point to host:8010 when testing outside the proxy
+const API_BASE_URL = 'http://46.249.101.150:8010'; // e.g. http://<backend-host>:8010
 
 // Get stored auth token
 const token = localStorage.getItem('access_token');

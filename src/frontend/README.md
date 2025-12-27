@@ -23,9 +23,9 @@ A modern task management and chat interface with Atom One Dark Pro theme support
 
 ## Setup
 
-1. **Configure API Endpoint**: Update `API_BASE_URL` in the JavaScript files to point to your backend:
+1. **Configure API Endpoint**: Update `API_BASE_URL` in the JavaScript files to point to your backend (Docker maps backend 8000 -> host 8010):
    ```javascript
-   const API_BASE_URL = 'http://localhost:8000';
+   const API_BASE_URL = 'http://localhost:8010';
    ```
 
 2. **Serve the Files**: Use a web server to serve the static files. For example:
